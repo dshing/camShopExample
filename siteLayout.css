@@ -1,0 +1,345 @@
+/* CSS Layout reset */
+* {
+	padding:0;
+	margin:0;
+}
+/* HTML body minimum width*/
+body {
+	min-width: 1010px;
+	font-size: 100%;
+}
+
+/* Center h1 and footer text */
+h1, footer p {
+	text-align: center;
+}
+
+/* Header */
+/* Header minimum height */
+header {
+	min-height: 80px;
+}
+	/* Company logo division */
+	#companyLogo{
+		display: inline-block;
+		margin: 5px;
+	}
+	/*  Expands the link to the home page to the whole division*/
+	#companyLogo a{
+		display: inline-block;
+	}
+
+	header h1 {
+		/* Logo and company name at same height */
+		display: inline-block;
+		vertical-align: middle;
+	}
+	/* Sets image height and is at the same height as company name*/
+	header img {
+		width: 40px;
+		vertical-align: middle;
+		margin: 2px 0 0 2px;
+	}
+	/* Search form selector */
+	#searchBar {
+		/* Aligns div content*/
+		display: inline-block;
+		/* Float to the right end of the header */
+		float: right;
+		margin: 10px;
+		vertical-align: middle;
+	}
+		/* Button for search, set matching height with search box */
+		#theSubmit {
+			height: 28px;
+			padding: 2px;
+		}
+		/* Search box, set matching height with search go button */
+		#searchTerm{
+			height: 20px;
+			padding: 2px;
+			margin-right: 2px;
+		}
+
+	/* Breadcrumb container */
+	/* Pushes the element away from the left side */
+	#breadCrumb {
+		margin: 0 5px;
+	}
+		/* Anchor tag position, expand click area */
+		#breadCrumb a{
+			padding: 5px;
+			height: 20px;
+			display: inline-block;
+			line-height: 20px;
+			vertical-align: middle;
+		}
+		/* Image size of the breadcrumb home anchor tag */
+		#breadCrumb img {
+			width:20px;
+			margin-right: 5px;
+			vertical-align: middle;
+		}
+
+	/* Navigation menu */
+	/* Removes list bulletpoints of all the list items and sets the width*/
+	.menuItem {
+		list-style-type: none;
+		/*  Adds top border to all elements as a visual separator of each list item */
+		border-top: 1px solid white;
+		width: 150px;
+	}
+	/* Category displayed in nav menu */
+	.navmenuItem {
+		/* Set to take max nav menu height, and used as relative point of the drop down menu */
+		display: inline-block;
+		text-align: center;
+		height: 24px;
+		line-height: 24px;
+		width: 150px;
+		position: relative;
+	}
+	/* Product items, wider drop down menu element */
+	.submenuItem {
+		width: 300px;
+	}
+		/* Drop down menu for the sub categories*/
+		.subMenu {
+			display: none;
+			position: absolute;
+			/* Displays menu in front of main body content, otherwise it is underneath*/
+			z-index: 1024;
+		}
+		/* Highlight category and 1st drop down menu*/
+		.menuItemHover {
+			display: block;
+		}
+		/* Drop down menu for the products */
+		.subsubMenu {
+			position: absolute;
+			margin-top: -25px;
+			left: 100%;
+		}
+		/* Product anchor tag display*/
+		.anchorMenuItem {
+			display: block;
+		}
+
+/* Main body content */
+/* Add padding and set as relative position for child elements */
+#mainBody {
+	padding: 15px 0;
+	position: relative;
+}
+
+/* Footer selector */
+/* Increase height of the division and centers the text vertically */
+footer {
+	height: 30px;
+	line-height: 30px;
+}
+
+
+
+/* INDEX PAGE CONTENT*/
+
+/* Layout for text elements in carousel */
+.titleStart, .priceStart {
+	position: absolute;
+	padding: 5px 20px;
+	font-size: 150%;
+	/* skews the element box into a parallelogram */
+	transform: skewX(-20deg); /* Standard syntax */
+}
+	/* Positioning for priceStart */
+	.priceStart {
+		width: 30%;
+		top: 2.5%;
+		left: -500px;
+	}
+	/* Positioning for titleStart */
+	.titleStart {
+		width: 40%;
+		right: -500px;
+		top: 80%;
+		text-align: right;
+	}
+
+
+
+
+
+
+/* RESULT PAGE CONTENT */
+/* Table results layout */
+#searchTable {
+	margin: 10px;
+	width: 850px;
+}
+	/* Add class to table header layout */
+	.tableHeaderAdd {
+		padding: 5px;
+		height: 60px;
+	}
+	/* Add class to text in table header */
+	.tableHeaderTextAdd {
+		margin: auto;
+		display:block;
+		height: 60px;
+		line-height: 60px;
+	}
+		/* Div to store sort Arrow, set to inline with anchor tag */
+		.sortHeader{
+			display: inline;
+		}
+			/* Arrow pointing down for sorting  */
+			.headerSortDown {
+				width: 0;
+				height: 0;
+			}
+			/* Arrow pointing up for sorting */
+			.headerSortUp {
+				width: 0;
+				height: 0;
+			}
+	/* Product image sizing in the table */
+	.tableImageMod {
+		height: 60px;
+		width: 60px;
+		vertical-align: middle;
+	}
+	#searchTable tbody td{
+		text-align: center;
+	}
+	/* Product link positioning */
+	#searchTable tbody a{
+		padding: 2px;
+		margin: 4px;
+	}
+
+/* No result text alignment */
+.noResult{
+	padding: 20px;
+	text-align: center;
+}
+
+/* Displays the filter menu*/
+.displayFilterMenu{
+	float: left;
+	width: 140px;
+	margin: 25px 5px;
+	padding: 5px;
+	overflow-y: auto;
+}
+	/* Filter menu anchor tag. Custom height, link fills the whole element*/
+	#filterResetButton a{
+		height: 30px;
+		line-height: 30px;
+		text-align: center;
+		margin: 5px;
+	}
+	/* Filter menu anchor tags displayed in block */
+	#filterMenu a{
+		display:block;
+	}
+	/* Filter menu subcategory indentation */
+	.subCategory{
+		padding-left: 10px;
+	}
+
+
+
+
+
+
+/* PRODUCT PAGE CONTENT */
+/* Container for the current product information */
+#productContainer{
+	margin: 10px;
+	width: 700px;
+	display:inline-block;
+}
+/* Container for image and product title, price, id. Position relative for those elements to position. */
+#topProductContainer {
+	margin: 5px;
+	position: relative;
+}
+	/* Image resizing */
+	.productImageMod{
+		padding: 5px;
+		height: 300px;
+	}
+	/* Text container next to the image */
+	#topContainerText {
+		position: absolute;
+		float: right;
+		top: 15px;
+		right: 0;
+		width: 300px;
+		margin: 0 auto;
+		padding: 10px;
+	}
+	/* Price class selector */
+	.priceMod{
+		margin-top: 30px;
+	}
+	/* Layout for button to buy item*/
+	.nonWorkingBuy{
+		height: 40px;
+		display: block;
+		line-height: 40px;
+		padding-left: 8px;
+		margin-top: 20px;
+	}
+
+	/* Padding for the main description */
+	#productContainer > p{
+		padding: 5px;
+	}
+		/* Spec table layout*/
+		#specSheetTable{
+			margin: 10px auto;
+		}
+			/* Spec cell layout */
+			#specSheetTable td{
+				padding: 7px;
+				width: 250px;
+			}
+			#specSheetTable th{
+				padding: 7px;
+				width: 250px;
+			}
+
+
+/* Comparison container */
+/* Layout and position of the container. Stuck to the right side*/
+#compareContainer{
+	width: 260px;
+	min-height: 255px;
+	position: absolute;
+	top: 385px;
+	right: 10px;
+}
+	/* Resizing the select option box to fit the parent container*/
+	#compareProducts{
+		padding: 5px;
+		max-width: 95%;
+		margin: 5px 6px;
+	}
+	/* Resizing the table to fit the parent container */
+	#compareSpecSheetTable{
+		padding: 5px;
+		width: 100%;
+		text-align: left;
+	}
+	/* Padding for spec text */
+	#compareSpecSheetTable p{
+		padding: 5px;
+	}
+  	/* Fill the anchor link to the whole cell, increase height and center text vertically*/
+	#compareSpecSheetTable a{
+		height: 30px;
+		display: block;
+		line-height: 30px;
+		text-align: center;
+	}

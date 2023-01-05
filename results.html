@@ -1,0 +1,654 @@
+<!DOCTYPE html> 
+<html>
+	<head>
+		<meta charset="UTF-8" />
+		<title>Camera Shop</title>
+		<!-- CSS File -->
+		<link rel="stylesheet" href="siteLayout.css" type="text/css" media="screen" />
+		<link rel="stylesheet" href="siteTheme.css" type="text/css" media="screen" />
+		<style>
+			/* For styling specific to this page */
+			#mainBody {
+				min-height: 615px;
+			}
+		</style>
+		<!-- Script files and code -->
+		<script src="jquery-2.2.0.min.js"></script>
+		<script src='CameraShop.js'></script>
+		<script>
+			// variable holds URL parameters
+			var vars = [], hash;
+			// Assigns URL parameters to variable
+			var q = document.URL.split('?')[1];
+			// Results array stores NUMBER position of the $product XML data
+			var searchResultList;
+
+			// Reset the order that is active
+			var idOrder = 0;
+			var priceOrder = 0;
+			var brandOrder = 0;
+			var titleOrder = 0;
+
+			// Removed words list
+			var removedSearchWords;
+
+			// Function to sort the results table
+			function sortResults(colName){
+				var tmp; // Stores the position of the search temporarily to be assigned to a new index position
+				var swap; // Indicates the need to swap
+				var order; // The order the table is sorted (ascending/descending)
+
+
+				// If there is more than one search result
+				if (searchResultList.length > 1){
+					// Work out the ordering: ascending (1), or descending (-1)
+					if (colName == 'brand'){
+						// If column name matches, then check what the order is and switches
+						if (brandOrder != 1){
+							brandOrder = 1;
+							order = 1;
+						}else{
+							brandOrder = -1;
+							order = -1;
+						}
+						priceOrder = 0;
+						idOrder = 0;
+						titleOrder = 0;
+					}else if (colName == 'price'){
+						//check 'price' column
+						if (priceOrder != 1){
+							priceOrder = 1;
+							order = 1;
+						}else{
+							priceOrder = -1;
+							order = -1;
+						}
+						brandOrder = 0;
+						idOrder = 0;
+						titleOrder = 0;
+					}else if (colName == 'title'){
+						//check 'name' column
+						if (titleOrder != 1){
+							titleOrder = 1;
+							order = 1;
+						}else{
+							titleOrder = -1;
+							order = -1;
+						}
+						brandOrder = 0;
+						priceOrder = 0;
+						idOrder = 0;
+					}else if (colName == 'id'){
+						//check 'id' column
+						if (idOrder != 1){
+							idOrder = 1;
+							order = 1;
+						}else{
+							idOrder = -1;
+							order = -1;
+						}
+						brandOrder = 0;
+						priceOrder = 0;
+						titleOrder = 0;
+					}
+
+					// Nested loops, each loop variable is used to get an element at different position searchResultList
+					for (var i=0; i <= (searchResultList.length - 2); i++){
+						for (var j=i+1; j <= (searchResultList.length - 1);j++){
+							// Get the data
+							$row1 = $products.find('product').filter(":nth-child("+ searchResultList[i] + ")");
+							$row2 = $products.find('product').filter(":nth-child("+ searchResultList[j] + ")");
+
+							// Assigns product row to variable
+							var firstData = $row1.find(colName).text();
+							var secondData = $row2.find(colName).text();
+
+							// Put data in correct types for comparison
+							if (colName == 'brand' || colName == 'title'){
+								//For text, sets to uppercase to better match
+								firstData = firstData.toUpperCase();
+								secondData = secondData.toUpperCase();
+							}else{
+								// For numbers, removes any commas
+								firstData = parseFloat(firstData.replace(',',''));
+								secondData = parseFloat(secondData.replace(',',''));
+							}
+
+							swap = 0; // Assume no swap is needed
+
+							// Check if it needs to swap order
+							if (order == 1){
+								// Ascending
+								if (firstData > secondData){
+									swap = 1;
+								}
+							}else{
+								// Descending
+								if (firstData < secondData){
+									swap = 1;
+								}
+							}
+
+							if (swap == 1){
+								//Do the swap
+								// Takes the data temporarily
+								tmp = searchResultList[i];
+								// Assigns the new data to the new position
+								searchResultList[i] = searchResultList[j];
+								// Assigns temporary data back into the list
+								searchResultList[j] = tmp;
+							}
+						}
+					}
+					// Emtpy the table to avoid duplicates
+					$('#searchTable').find('tbody').empty();
+
+					// Re-draw table
+					constructResultTable();
+				}
+			}
+
+			// Search function
+			function searchEngine(searchTerm){
+
+				// Empty the search list
+				searchResultList = [];
+
+				// Creates a new list with search WORDS
+				var searchEngineList = [];
+
+				// Creates a new list of removed search terms
+				removedSearchWords = [];
+
+				//if there is a search term separated by plus
+				if (searchTerm.indexOf("+") !== -1) {
+					// Split search term by each +
+					searchEngineList = searchTerm.split("+");
+				}else{
+					// Else, if it is a single word, just add the word into the list
+					searchEngineList.push(searchTerm);
+				}
+
+
+
+				var resIndex = 0; // results array index
+
+				// temporary lists
+				var tempResult = [];
+				var secondaryStore = [];
+
+
+				// Iterate through each word in search engine list
+				for(var k = 0; k < searchEngineList.length; k++) {
+					// assigns a single word to be compared
+					var searchTermWord = searchEngineList[k];
+					var resultsIndex = 1; // Data Index
+
+
+					// Counter for how many times the same word matches
+					var matchCounter = 0;
+
+
+
+					// Retrieves each product row iteratively
+					$products.find('product').each(function () {
+						// Process a 'product' to get the data in a single String
+						var productRow = $(this).find('id').text() + " " + $(this).find('brand').text() + " " + $(this).find('title').text() + " " + $(this).find('price').text();
+
+						// Check if search word is in the data, ignoring case
+						if (productRow.toUpperCase().indexOf(searchTermWord.toUpperCase()) > -1) {
+
+							// Match found, then increment
+							matchCounter++;
+
+
+							//See if result is not already in the list
+							if (secondaryStore.indexOf(resultsIndex) == -1) {
+
+								// Search term found, save results index
+								//Temp result is an object array with keys: resNo for index position, and value
+								//Value is used for relevancy, higher value shows higher in the search table
+								tempResult.push({resNo: resultsIndex, value: 1});
+								secondaryStore[resIndex] = resultsIndex;
+								// Increment index position
+								resIndex++;
+
+							} else {
+								//if result is in the array, only increment the value in tempResult object array
+								tempResult[secondaryStore.indexOf(resultsIndex)].value += 1;
+							}
+						}
+						// Move result index by one
+						resultsIndex++;
+					});
+
+					// If word has no matches, adds index position into removedSearchWords
+					if(matchCounter == 0){
+						removedSearchWords.push(searchEngineList.indexOf(searchTermWord));
+					}
+				}
+
+				// If removedSearchWords has elements
+				if(removedSearchWords != undefined) {
+
+					//* Iterates backwards to remove words from word list
+					for(var i = removedSearchWords.length; i--;){
+						searchEngineList.splice(removedSearchWords[i], 1);
+					}
+				}
+
+				// Creates a string of all the current search words to be assigned to vars['searchTerm']
+				for(var j = 0; j < searchEngineList.length; j++){
+					if(j == 0){
+						// First item, word is assigned to SearchConcat
+						var searchConcat = searchEngineList[j];
+					}else{
+						// Following words have + sign
+						searchConcat = searchConcat.concat("+" + searchEngineList[j]);
+					}
+				}
+				vars['searchTerm'] = searchConcat;
+
+				// Sort the order of the objects by relevancy according to the number in tempResult value (descending)
+				tempResult.sort(function(a,b){
+					if (a.value < b.value){
+						return 1;
+					}
+					if (a.value > b.value){
+						return -1;
+					}
+					return 0;
+				});
+
+				//looks at each object element and adds the resNo in the search results array
+				tempResult.forEach(function(element){
+					searchResultList.push(element.resNo);
+				});
+
+				// Checks if there is a match
+				if(searchResultList.length > 0){
+					constructResultTable();
+				}else{
+					// No result match
+					$("#mainBody").append("<p>No Results Found</p>").addClass("noResult");
+				}
+
+
+			}
+			// Populates the main body content table and filter menu
+			function constructResultTable(){
+
+				// Empty filter menu
+				$('#filterMenu').empty();
+
+				// Inject table header with custom column width, then add classes to all the table headings
+				$('#searchTable').html("<thead><tr><th width='6%'>Image</th>" +
+						"<th width='6%'><a href='#' id='sortID'>ID<div class='sortHeader'></div></a></th>" +
+						"<th width='10%'><a href='#' id='sortBrand'>Brand<div class='sortHeader'></div></a></th>" +
+						"<th width='58%'><a href='#' id='sortTitle'>Title<div class='sortHeader'></div></a></th>" +
+						"<th width='10%'><a href='#' id='sortPrice'>Price<div class='sortHeader'></div></a></th>" +
+						"<th width='10%'>Link</th></thead><tbody></tbody>")
+						.find('tr').addClass( "tableHeaderAdd" )
+						.find('a').addClass( "tableHeaderTextAdd" );
+				
+
+				// Event listener for table headers, for sort function
+				$('#sortID').on('click', function(e){
+					e.preventDefault();
+					sortResults('id');
+					addSortArrow(idOrder, 'sortID');
+				});
+
+				$('#sortBrand').on('click', function(e){
+					e.preventDefault();
+					sortResults('brand');
+					addSortArrow(brandOrder, 'sortBrand');
+				});
+
+				$('#sortTitle').on('click', function(e){
+					e.preventDefault();
+					sortResults('title');
+					addSortArrow(titleOrder, 'sortTitle');
+				});
+
+				$('#sortPrice').on('click', function(e){
+					e.preventDefault();
+
+					sortResults('price');
+					addSortArrow(priceOrder, 'sortPrice');
+				});
+
+				function addSortArrow(varOrder, tableElement){
+
+					if(varOrder == 0){
+						$('#' + tableElement + '').find('.sortHeader').empty();
+					}else if(varOrder == 1){
+						$('#' + tableElement + '').find('.sortHeader').addClass('headerSortDown');
+					}else if(varOrder == -1){
+						$('#' + tableElement + '').find('.sortHeader').addClass('headerSortUp');
+					}
+				}
+
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				// Iterates through each product data according to each index on searchResultList
+				for(var indexPos in searchResultList){
+					$row = $products.find('product').filter(":nth-child(" + searchResultList[indexPos] + ")");
+
+					//Finds the tag and assigns its text to a variable
+					var imgCol0 = $row.find('picture').text();
+					var idCol1 = $row.find('id').text();
+					var brandCol2 = $row.find('brand').text();
+					var titleCol3 = $row.find('title').text();
+					var priceCol4 = $row.find('price').text();
+
+					// Add product data to the table
+					$('#searchTable').find(' tbody').append("<tr><td><img class='tableImageMod' src='./ProductImages/"+ imgCol0 +"'/></td>" +
+							"<td>" + idCol1 + "</td>" +
+							"<td>" + brandCol2 + "</td>" +
+							"<td><a class='titleLink' href='product.html?searchTerm=" + vars['searchTerm'] + '&id=' + idCol1 +"'>" + titleCol3 + "</a></td>" +
+							"<td>&pound;" + priceCol4 +"</td>" +
+							"<td><a class='linkToProduct' href='product.html?searchTerm=" + vars['searchTerm'] + '&id=' + idCol1 +"'>View Product</a></td></tr>")
+					// Adds class to table elements
+							.find( "tr:odd" ).addClass( "alternateRowStyle" );
+				}
+
+				// Add class show filter menu
+				$('#filterMenu').addClass("displayFilterMenu");
+
+				// Populating the filter menu
+				// Create list variables
+				var topCatList = [];
+				var subCatListDSLR = [];
+				var subCatListCompact = [];
+				var brandList = [];
+				// Predefined price list range, which priceList corresponds to
+				var priceBracketList = ["Under £99", "£100-£199", "£200-£399", "£400-£999", "Over £1000"];
+				var priceList = [];
+
+				// Find all top categories, subcategories, brands, price of the items in the table according searchResultList
+				for(var indexPos in searchResultList) {
+					$row = $products.find('product').filter(":nth-child(" + searchResultList[indexPos] + ")");
+
+					var topCategories = $row.attr('top-level-category');
+					var subCategories = $row.attr('sub-level-category');
+					var brand = $row.find('brand').text();
+					var price = $row.find('price').text();
+
+					// Remove commmas in price
+					price = price.replace(',','');
+
+					// Function to add data to list
+					function checkDataInList(list, data){
+						if(list.indexOf(data) == -1){
+							list.push(data);
+						}
+					}
+
+					// Adds categories from current results into the list
+					checkDataInList(topCatList, topCategories);
+					if($row.attr('top-level-category') == "DSLR"){
+						checkDataInList(subCatListDSLR, subCategories);
+					}
+					if($row.attr('top-level-category') == "Compact"){
+						checkDataInList(subCatListCompact, subCategories);
+					}
+
+					// Adds brands from current results into the list
+					checkDataInList(brandList, brand);
+
+					// Adds number that corresponds to priceBracketList index
+					if( price < 100){
+						checkDataInList(priceList, 0);
+					}else if (price >= 100 && price < 200){
+						checkDataInList(priceList, 1);
+					}else if (price >= 200 && price < 400){
+						checkDataInList(priceList, 2);
+					}else if (price >= 400 && price < 1000){
+						checkDataInList(priceList, 3);
+					}else if (price >= 1000){
+						checkDataInList(priceList, 4);
+					}
+
+				}
+
+				// Sorts data in the lists
+				priceList.sort();
+				brandList.sort();
+
+				// Adds text to the filter menu
+				$('#filterMenu').append("<p>Filter by:</p>")
+						.append("<p>Categories</p>");
+
+
+				// Populates the filter menu
+				// for each top category of the current search result
+				$.each(topCatList, function(i, val){
+					$('#filterMenu').append("<a href='results.html?searchTerm=" + vars['searchTerm'] + "&fcat=" + val + "'  id='filter" + val + "'>"+ val +" </a>");
+						// Appends sub categories under the correct category
+						if(val == "DSLR"){
+							$.each(subCatListDSLR, function(i, secondVal){
+								$('#filterMenu').append("<a href='results.html?searchTerm=" + vars['searchTerm'] + "&fcat=" + secondVal.replace(" ", "") + "' class='subCategory' id='filter" + secondVal + "'>"+ secondVal +" </a>");
+							});
+
+						}else{
+							$.each(subCatListCompact, function(i, secondVal){
+								$('#filterMenu').append("<a href='results.html?searchTerm=" + vars['searchTerm'] + "&fcat=" + secondVal.replace(" ", "") + "' class='subCategory' id='filter" + secondVal + "'>"+ secondVal +" </a>");
+							});
+						}
+				});
+
+				// Adds brands
+				$('#filterMenu').append("<p>Brand</p>");
+
+				$.each(brandList, function(i, val){
+					$('#filterMenu').append("<a href='results.html?searchTerm=" + vars['searchTerm'] + "&fcat=" + val + "'  id='filter" + val + "'>"+  val +" </a>");
+				});
+				// Adds prices
+				$('#filterMenu').append("<p>Price</p>");
+
+				$.each(priceList, function(i, val){
+					$('#filterMenu').append("<a href='results.html?searchTerm=" + vars['searchTerm'] + "&fcat=" + val + "'  id='filter" + val + "'>"+  priceBracketList[val] +" </a>");
+				});
+
+				// If there is a filter parameter in vars, then add filter reset
+				if(vars['fcat'] != undefined) {
+					$('#filterMenu').append("<div id='filterResetButton'><a href='results.html?searchTerm=" + vars['searchTerm'] + "'>Reset Filter </a></div>");
+				}
+
+
+			}
+
+			// filter function
+			function filterResults(filterTerm){
+				// array of removed items
+				var removeList = [];
+
+				// if filter term is between 0-4, then it should be a price filter term
+				if(filterTerm >= 0 && filterTerm <= 4){
+
+					// Iterates through each product data according to each index on searchResultList
+					for(var indexNumberFilter in searchResultList) {
+						$row = $products.find('product').filter(":nth-child(" + searchResultList[indexNumberFilter] + ")");
+
+						// assigns price and removes commas
+						var price = $row.find('price').text().replace(",","");
+
+						// find price bracket function
+						function priceAllocation(priceAmount, filterBracket){
+							// object array with low and high values
+							var bracketList = [
+								{low: undefined, high: 100},
+								{low: 100, high: 200},
+								{low: 200, high: 400},
+								{low: 400, high: 1000},
+								{low: 1000, high: undefined
+							}];
+
+							// Assigns the bracketList object according to the filterBracket index
+							var compare = bracketList[filterBracket];
+							// Assigns the low end
+							var lowEnd = compare.low;
+							// Assigns the high end
+							var highEnd = compare.high;
+
+							// If there is only high (bracketList[0])
+							if(lowEnd == undefined){
+								// Check if price is NOT lower than highEnd
+								if((priceAmount <= highEnd) == false){
+									//Add to remove list
+									removeList.push(indexNumberFilter);
+								}
+							// If there is only lowEnd (bracketList[5]
+							}else if(highEnd == undefined){
+								// Check if price is NOT higher than lowEnd
+								if((priceAmount >= lowEnd) == false){
+									removeList.push(indexNumberFilter);
+								}
+							//Any other bracket range...
+							}else{
+								// Check if prices do not match the bracket
+								if(((priceAmount > lowEnd) && (priceAmount <= highEnd)) == false){
+									removeList.push(indexNumberFilter);
+								}
+							}
+						}
+						// Price allocation runs
+						priceAllocation(price, filterTerm);
+
+
+					}
+				// For category and brand filters
+				}else{
+					// Iterates through each product data according to each index on searchResultList
+					for(var childNum in searchResultList){
+						$row = $products.find('product').filter(":nth-child(" + searchResultList[childNum] + ")");
+
+						// Creates a single string of current product
+						var productRow = $row.attr('top-level-category') + " " + $row.attr('sub-level-category').replace(" ", "") + " " + $row.find('brand').text();
+
+						// If the filterTerm is not in the productRow string
+						if(productRow.indexOf(filterTerm) == -1){
+							// Add childNum index position
+							removeList.push(childNum);
+						}
+					}
+				}
+
+				// Iterate backwards to prevent array out of bounds
+				for(var i = removeList.length; i--;){
+					// Remove elements from searchResultList
+					searchResultList.splice(removeList[i] , 1);
+				}
+				constructResultTable();
+			}
+
+
+			$(document).ready(function() {
+
+				// Populate the nav bar
+				populateNav("navmenu");
+
+				// Add a arrow indication downwards to each category
+				$('.navmenuItem').append(' <span class="categoryV"> &#x25BC; </span> ');
+
+				// If q has elements
+				if (q != undefined) {
+					// Split by the & symbol (each different parameter)
+					q = q.split('&');
+					// Iterates to separate the parameter tag name and its value and add it into vars
+					for (var i = 0; i < q.length; i++){
+						hash = q[i].split('=');
+
+						vars.push(hash[1]);
+						vars[hash[0]] = hash[1];
+					}
+
+				}
+
+
+				// If the key 'id' in vars has a value
+				if (vars["id"] != undefined ){
+					// Then add HTML anchor to the breadcrumb with its parameters
+					$('#breadCrumb').append('<span class="textColourChange"> > </span> <a href="product.html?searchTerm=' + vars['searchTerm'] + '&id=' + vars['id'] +'">Return to Product Page</a>');
+				}
+
+				// If result is not empty, then proceed with search
+				if (vars["searchTerm"] != undefined && vars["searchTerm"] != "" ){
+
+					// function that will compare search term with the products, then draw the table accordingly
+					searchEngine(vars['searchTerm']);
+
+					// If vars['fcat'] has a value
+					if (vars['fcat'] != undefined){
+						// Run filter results function with vars['fcat'] value
+						filterResults(vars['fcat']);
+					}
+
+					// If vars searchTerm has a value
+					if (vars["searchTerm"] != undefined) {
+						// Replaces the + signs added in the URI with white spaces and passes into the search box
+						// Plus sign is escaped and in between slashes and a g (for global), this will find all instances instead of just the first
+						$('#searchTerm').val(vars['searchTerm'].replace(/\+/g, ' '));
+					}else{
+						// If vars search term is undefined, assign empty value
+						vars['searchTerm'] = '';
+						// Passes vars searchTerm into the search box
+						$('#searchTerm').val(vars['searchTerm']);
+					}
+
+				}else if ((vars["searchTerm"] == "") || (vars["searchTerm"] == undefined )){
+					// No search term found
+					$("#mainBody").append("<p>No Search Terms Entered</p>").addClass("noResult");
+				}
+			});
+
+
+		</script>
+	</head>
+	<!-- Body of HTML -->
+	<body>
+		<!-- Header of HTML -->
+		<header>
+			<!-- Company Logo -->
+			<div id="companyLogo">
+				<a href="index.html">
+					<img src="logo.jpg" alt="Camera Shop Logo" />
+					<!-- Company name next to Logo -->
+					<h1>Camera Shop</h1>
+				</a>
+			</div>
+			<!-- Search bar in the top right corner -->
+			<div id="searchBar"><form action="results.html">
+				<input type="text" name="searchTerm" id="searchTerm" placeholder="Enter Search Term"><input type="submit" id="theSubmit" value="Go">
+			</form></div>
+		</header>
+		<!-- Navigation menu -->
+		<ul class="navmenu">
+		</ul>
+		<!-- Main body of content -->
+		<div id="mainBody">
+			<!-- Breadcumb navigation underneath company name -->
+			<div id="breadCrumb"><a href="index.html"><img src="home.jpg" alt="The home button" />Home</a></div>
+			<!-- filter menu division -->
+			<div id="filterMenu">
+			</div>
+			<!-- search table division -->
+			<table id="searchTable">
+				<tbody>
+				</tbody>
+			</table>
+		</div>
+		<!-- footer -->
+		<footer>
+			<p>&copy; Camera Shop 2016</p>
+		</footer>
+	</body>
+</html>

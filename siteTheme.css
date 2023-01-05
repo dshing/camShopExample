@@ -1,0 +1,319 @@
+/* General styling */
+/* Set main font and background for the body */
+body {
+	font-family: Arial, Verdana, sans-serif;
+	font-style: normal;
+	background-color: white;
+}
+
+/* Set header and footer background colour,193177 same colour */
+header, footer{
+	background-color: #1c7198;
+}
+
+/* Set font colour for header h1 and footer p */
+h1, footer p {
+	color: #ffffff;
+}
+/* Company logo division */
+#companyLogo a{
+	text-decoration: none;
+}
+
+/* Search box styling */
+/* Search button styling */
+#theSubmit {
+	background-color: #ffffff;
+	color: #000000;
+	border: none;
+}
+
+/* Breadcrumb styling */
+/* Removes text decoration and sets colour */
+#breadCrumb a{
+	text-decoration: none;
+	color: #000000;
+}
+	/* Breadcrumb has underline decoration when hovered  */
+	#breadCrumb a:hover{
+		text-decoration: underline;
+	}
+
+/* Nav menu styling*/
+/* Rest of the nav bar colour */
+.navmenu {
+	background-color: #ffffff;
+}
+	/* Drop down menu styling */
+	.menuItem, .subMenu {
+		background-color: #32e3e3;
+		color: #000000;
+	}
+	/* The categories first visible in the nav menu. Overrides previous styling */
+	.navmenuItem {
+		background-color: #ffffff;
+		box-shadow: none;
+		border-left: 1px solid #d3d3d3;
+		border-right: 1px solid #d3d3d3;
+	}
+	/* Product link styling */
+	.anchorMenuItem {
+		 color: #000000;
+		 text-decoration: none;
+	 }
+		/* Hovered item is highlighted */
+		.chosenItem {
+			background-color: #2ea9c1;
+		}
+		/* Hovered product link is highlighted */
+		.menuItem a:hover{
+			background-color: #2ea9c1;
+		}
+
+/* Main body styling */
+/* inset adds an inward shadow, parameters for top and bottom */
+#mainBody{
+	box-shadow: inset 0 7px 7px -7px #808080,
+				inset 0 -8px 7px -7px #808080;
+}
+
+
+
+
+
+/* SPAN */
+/* Used to style text outside elements */
+.textColourChange{
+	color: #000000;
+}
+
+/* Style the category down arrow*/
+.categoryV{
+	color: #d3d3d3;
+}
+
+
+
+
+/* INDEX PAGE CONTENT*/
+
+/* Carousel elements styling */
+.titleStart, .priceStart {
+	background-color: #483d8b;
+	color: #ffffff;
+	opacity: 0.75;
+}
+
+
+
+
+
+
+
+/* RESULTS PAGE CONTENT */
+
+/* No result text styling */
+	.noResult{
+		font-size: 20px;
+	}
+
+/* Search result table styling */
+/* Table header */
+
+	/* Add class to each header cell */
+	.tableHeaderAdd {
+		background-color: #1c7198;
+		color: #ffffff;
+	}
+	.tableHeaderTextAdd {
+		text-decoration: none;
+		color: #ffffff;
+	}
+	/* Sort heading highlight on hover */
+	#searchTable thead a:hover{
+		background-color: #1c84ab;
+	}
+/* Arrow pointing down for sorting  */
+	.headerSortDown {
+		border-left: 5px solid transparent;
+		border-right: 5px solid transparent;
+
+		border-top: 5px solid white;
+	}
+	/* Arrow pointing up for sorting */
+	.headerSortUp {
+		border-left: 5px solid transparent;
+		border-right: 5px solid transparent;
+
+		border-bottom: 5px solid white;
+	}
+
+/* Table body */
+	/* Row alternate styling */
+	.alternateRowStyle {
+		background-color: #add8e6;
+	}
+
+	/* Set product image size */
+	.tableImageMod {
+		border: 1px solid black;
+	}
+	/* title link, remove link styling*/
+	.titleLink{
+		text-decoration: none;
+		color: black;
+	}
+		/* Add underline when hovered */
+		a.titleLink:hover{
+			text-decoration: underline;
+		}
+	/* Link to product styling */
+	.linkToProduct{
+		text-decoration: none;
+		color: #000000;
+		background-color: #e1db57;
+		white-space: nowrap;
+		box-shadow: 1px 1px 1px 1px #000000;
+		font-weight: bold;
+	}
+		/* Link to product will look indented when clicked, as if it was pressed */
+		a.linkToProduct:active{
+			box-shadow: inset 1px 1px 1px 1px #000000;
+		}
+		/* Highlight link when hovered*/
+		a.linkToProduct:hover{
+			background-color: #f1eb5e;
+		}
+
+
+
+/* Filter Menu */
+/* Display the filter menu  */
+.displayFilterMenu{
+	box-shadow: 1px 1px 1px 1px #d3d3d3;
+	text-decoration: none;
+	background-color: #f8f8f8;
+}
+	/* Style the filter links, direct children of the filter menu*/
+	.displayFilterMenu > a{
+		text-decoration: none;
+		color: #0000ff;
+	}
+		/* Change link colour when hovered */
+		.displayFilterMenu > a:hover{
+			background-color: #add8e6;
+		}
+
+	/* Reset all filters link button */
+	#filterResetButton a{
+		background-color: #e1db57;
+		color: #000000;
+		text-decoration: none;
+		font-size: 17px;
+		font-weight: bold;
+		box-shadow: 1px 1px 1px 1px #000000;
+	}
+		/* Button will look indented when clicked, as if it was pressed */
+		#filterResetButton a:active{
+			box-shadow: inset 1px 1px 1px 1px #000000;
+		}
+
+
+
+
+
+
+/* PRODUCT PAGE CONTENT*/
+/* top container */
+	/* Styles the price box*/
+	#topContainerText {
+		box-shadow: 1px 1px 1px 1px #808080;
+		background-color: #f8f8f8;
+	}
+	/* Set Product title text size*/
+	.titleMod{
+		font-size: 20px;
+	}
+		/* Text size for the item ID */
+		#topContainerText p{
+			font-size: 13px;
+		}
+		/* Price class selector */
+		.priceMod{
+			font-size: 25px;
+			font-weight: bold;
+		}
+		/* Style for button to buy item*/
+		.nonWorkingBuy{
+			background-color: #e1db57;
+			text-decoration: none;
+			text-align: left;
+			font-weight: bold;
+			font-size: 19px;
+			color: #000000;
+			border-bottom: 3px solid #d1cb56;
+			}
+			/* Highlight link when hovered */
+			a.nonWorkingBuy:hover{
+				background-color: #f1eb5e;
+			}
+			/* Pressed link when clicked on */
+			a.nonWorkingBuy:active{
+				border-bottom: 3px solid #f8f8f8;
+				box-shadow: inset 1px 1px 1px 1px #808080;
+			}
+
+
+/* Spec Sheet table */
+/* Styling for each table headings */
+#specSheetTable th {
+	background-color: #2ea9c1;
+	color: #000000;
+	text-align: left;
+}
+	/* Styling for each table cells */
+	#specSheetTable td{
+		background-color: #32e3e3;
+		color: #000000;
+		font-size: 17px;
+		font-weight: bold;
+	}
+
+/* Comparison container */
+/* Adds a shadow to comparison container */
+#compareContainer{
+	box-shadow: 1px 1px 1px 1px #808080;
+	background-color: #f8f8f8;
+}
+	/* Table Spec sheet for comparison*/
+	/* Style the table headings */
+	#compareSpecSheetTable th{
+		background-color: #2ea9c1;
+		color: #000000;
+	}
+	/* Style the table cells */
+	#compareSpecSheetTable td{
+		background-color: #32e3e3;
+		color: #000000;
+		font-weight: bold;
+		font-size: 14px;
+	}
+	/* Style for link to compared product page */
+	#compareSpecSheetTable a{
+		text-decoration: none;
+		background-color: #e1db57;
+		color: #000000;
+		font-weight: bold;
+		border-bottom: 3px solid #d1cb56;
+	}
+		/* Highlight link when hovered */
+		#compareSpecSheetTable a:hover{
+			background-color: #f1eb5e;
+
+
+		}
+		/* Pressed link when clicked on */
+		#compareSpecSheetTable a:active{
+			box-shadow: inset 1px 1px 1px 1px #808080;
+			border: none;
+		}

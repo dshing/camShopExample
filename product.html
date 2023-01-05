@@ -1,0 +1,238 @@
+<!DOCTYPE html> 
+<html>
+	<head>
+		<meta charset="UTF-8" />
+		<title>Camera Shop</title>
+		<!-- CSS files -->
+		<link rel="stylesheet" href="siteLayout.css" type="text/css" media="screen" />
+		<link rel="stylesheet" href="siteTheme.css" type="text/css" media="screen" />
+		<style>
+			/* For styling specific to this page */
+			#mainBody {
+				min-height: 615px;
+			}
+		</style>
+		<!-- Script files and code -->
+		<script src="jquery-2.2.0.min.js"></script>
+		<script src='CameraShop.js'></script>
+		<script>
+
+			// variable holds URL parameters
+			var vars = [], hash;
+			// Assigns URL parameters to variable
+			var q = document.URL.split('?')[1];
+			// Holds a single product XML data
+			var productData;
+
+			// Function creates a select option box, according to the same sub-category as current product
+			function compareProduct(){
+				// Create a list that will store all the matching products
+				var compareProductList = [];
+
+				// Finds current product data sub-category and stores in category data
+				var categoryData = productData.attr("sub-level-category");
+
+				// For each product in the XML
+				$products.find('product').each(function(){
+					// Finds the category
+					var tempCategory = $(this).attr("sub-level-category");
+					// If the current product category matches the category in the XML
+					// And If the ID is not the same as the current product
+					if(categoryData == tempCategory && $(this).find('id').text() != productData.find('id').text()) {
+						//Create a new object
+						var compareObject = {};
+						//Add id and title keys to the object
+						compareObject['id'] = $(this).find('id').text();
+						compareObject['title'] = $(this).find('title').text();
+						//Adds the object into the array list
+						compareProductList.push(compareObject);
+					}
+				});
+				// Iterates through the list
+				compareProductList.forEach(function(compareObject){
+					// Adds a new option with a hidden value as ID, and displays the title of the product to the select box
+					$('#compareContainer').find('select').append('<option value="' + compareObject.id + '">' + compareObject.title + '</option>')
+				})
+			}
+
+			function findSpecAndPaint(idNumber, tableName){
+				// Find how many child of <spec> tags there are
+				var checkLength = $products.find("id:contains(" + idNumber + ")").siblings("spec").children();
+
+				// Iterates over how many spec child tags there are
+				for(var k = 0; k < checkLength.length; k++){
+					// Gets child element of <spec> into specData at position k
+					var specData = $products.find("id:contains(" + idNumber + ")").siblings("spec").children()[k];
+
+					// Looks for the Tag Name, changes to uppercase and assigns to tagSpecData
+					var tagSpecData = specData.tagName.toUpperCase();
+					// Looks for an underscore and replaces with a white space
+					tagSpecData = tagSpecData.replace('_', ' ');
+
+					var textSpecData = specData.textContent;
+					// Adds a table row with tag name and its corresponding data
+					// tableName dependant on the parameter string passed
+					$('#' + tableName +' > tbody').append('<tr><th><p>' + tagSpecData + '</p></th><td><p>' + textSpecData + '</p></td></tr>');
+				}
+			}
+
+
+			$(document).ready(function() {
+				
+				// Populate the nav bar
+				populateNav("navmenu");
+
+				// Add a arrow indication downwards to each category
+				$('.navmenuItem').append(' <span class="categoryV"> &#x25BC; </span> ');
+
+				// If q has elements
+				if (q != undefined){
+					// Split by the & symbol (each different parameter)
+					q = q.split('&');
+					// Iterates to separate the parameter tag name and its value and add it into vars
+					for (var i = 0; i < q.length; i++) {
+						hash = q[i].split('=');
+						vars.push(hash[1]);
+						vars[hash[0]] = hash[1];
+					}
+				}
+
+				// If the key searchTerm in vars has a value
+				if (vars["searchTerm"] != undefined){
+					// Then add HTML anchor to the breadcumb with its parameters
+					$('#breadCrumb').append('<span class="textColourChange"> > </span>  <a href="results.html?searchTerm=' + vars['searchTerm'] + '&id=' + vars['id'] +'">Return to Search Results</a>');
+				}
+
+				// Assigns all the product elements to productData, according to ID
+				productData = $products.find("id:contains(" + vars["id"] + ")").parent();
+
+
+				// Assigns each XML element to a variable, according to the ID from productData
+				var titleData = productData.find('title').text();
+				var picData = productData.find('picture').text();
+				var priceData = productData.find('price').text();
+				var idData = productData.find('id').text();
+				var descriptionData = productData.find('description').text();
+
+				// Populate the HTML page with product data from the xml, according to the ID
+				$('#productContainer').append('<div id="topProductContainer"></div>')
+						.append('<p>' + descriptionData + '</p>')
+						.append('<table id="specSheetTable"><thead><tr><th colspan ="2"><p>TECHNICAL SPECIFICATION</p></th></tr></thead><tbody></tbody></table>');
+
+				$('#topProductContainer').append('<img class="productImageMod" src="./ProductImages/' + picData + '" />')
+						.append('<div id="topContainerText"></div>');
+				$('#topContainerText').append('<h2 class="titleMod">' + titleData + '</h2>')
+						.append('<h3 class="priceMod"> Price: &pound; ' + priceData + '</h3>')
+						.append('<p> Item ID ' + idData + '</p>')
+						.append('<a href ="" class="nonWorkingBuy">Purchase Product</a>');
+
+				$('.nonWorkingBuy').on('click', function(e){
+					e.preventDefault();
+				});
+
+				// Spec table function
+				findSpecAndPaint(vars["id"], "specSheetTable");
+
+
+
+				// Add search term to search box if available
+				if (vars["searchTerm"] != undefined) {
+					$('#searchTerm').val(vars['searchTerm'].replace('+', ' '));
+				}
+
+				// Function creates a select option box, according to the same sub-category as current product
+				compareProduct();
+
+				// Event listener when select option box is changed
+				$('#compareProducts').on("change",(function(){
+
+					// If the option is not the placeholder first option
+					if($(this).val() != ""){
+						// If option selected has a value ID, find its parent, the whole product
+						var productToCompare = $products.find("id:contains(" + $(this).val() + ")").parent();
+						// find the price in the product
+						var priceDataCompare = productToCompare.find('price').text();
+						// Empty table
+						$('#compareContainer').find('a').empty();
+						$('#compareSpecSheetTable').find('tbody').empty();
+
+						// Reuse spec table function
+						findSpecAndPaint($(this).val(),"compareSpecSheetTable" );
+
+
+						// Add the price data to the table created by the findSpecAndPaint function
+						$('#compareSpecSheetTable').find('tbody').append('<tr><th><p>PRICE</p></th><td><p>&pound; ' + priceDataCompare + '</p></td></tr>');
+
+						//The following code adds a link underneath the table to the product selected in the selector box
+						//The if statement checks if there is a searchTerm in vars then add to the link as parameter if there is
+						if(vars['searchTerm'] != undefined){
+							$('#compareSpecSheetTable').find('tbody').append("<tr><td  colspan='2'><a href='product.html?searchTerm=" + vars['searchTerm'] + '&id=' + $(this).val() +"'>View Product</a></td></tr>")
+						}else{
+							$('#compareSpecSheetTable').find('tbody').append("<tr><td  colspan='2'><a href='product.html?&id=" + $(this).val() +"'>View Product</a></td></tr>");
+						}
+
+					}else{
+						// If option selected has no value (default message), then remove table
+						$('#compareSpecSheetTable').find('tbody').empty();
+						$('#compareContainer').find('a').remove();
+
+					}
+
+				}));
+
+				// Add search term to search box if available
+				if (vars["searchTerm"] != undefined) {
+					$('#searchTerm').val(vars['searchTerm'].replace('+', ' '));
+				}
+				
+			});
+		</script>
+	</head>
+	<!-- Body of the HTML -->
+	<body>
+	<!-- Header of HTML -->
+		<header>
+			<!-- Logo  -->
+			<div id="companyLogo">
+				<a href="index.html">
+					<img src="logo.jpg" alt="Camera Shop Logo" />
+					<!-- Company name next to Logo -->
+					<h1>Camera Shop</h1>
+				</a>
+			</div>
+			<!-- Search bar in the right top corner -->
+			<div id="searchBar"><form action="results.html">
+				<input type="text" name="searchTerm" id="searchTerm" placeholder="Enter Search Term" ><input type="submit" id="theSubmit" value="Go" >
+			</form></div>
+
+		</header>
+		<!-- Navigation menu -->
+		<ul class="navmenu">
+		</ul>
+		<!-- Main body container -->
+		<div id="mainBody">
+			<!-- Breadcumb navigation underneath company name -->
+			<div id="breadCrumb"><a href="index.html"><img src="home.jpg" alt="The home button" />Home</a></div>
+			<!-- Current product container -->
+			<div id="productContainer">
+			</div>
+			<!-- Container to compare products -->
+			<div id="compareContainer">
+				<!-- Select option box for products to compare -->
+				<select id="compareProducts">
+					<!-- Placeholder text -->
+					<option value="">Select product to compare</option>
+				</select>
+				<!-- Table for the specs and price of each product to compare -->
+				<table id="compareSpecSheetTable">
+					<tbody>
+					</tbody>
+				</table>
+			</div>
+		</div>
+		<!-- Footer -->
+		<footer>
+			<p>&copy; Camera Shop 2016</p>
+		</footer>
+	</body>
+</html>
